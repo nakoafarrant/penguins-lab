@@ -1,0 +1,55 @@
+---
+title: "Penguin Flibber Lengths ANOVA"
+author: "Nakoa Farrant"
+date: "11/7/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+1. Load packages
+```{r, include = FALSE}
+library(tidyverse)
+library(car)
+library(onewaytests)
+```
+
+Read in the penguins data
+```{r, include = FALSE}
+penguins <- read.csv("penguins.csv")
+```
+
+Our question: Is there a significant difference in mean flipper lengths for female Chinstrap, Gentoo, and Adelie Penguins near Palmer Archipelago
+
+three levels of species
+continuous rand variable: flipper length
+
+Maybe I can use one-way ANOVA...
+- Independent observations
+- Equal variance (Levene's test)
+- Normality (histograms/qqplots)
+
+first want to know how many observations were there in each group
+
+```{r}
+# with the penguins df, create a table that contains counts by species and sex
+counts <- with(penguins, table(species, sex))
+
+# data shows promise of being normally distributed given the counts. However, still need to do basic data analysis
+
+penguins2 <- penguins %>% 
+  # create a new column that has less elaborate species name
+  mutate(
+    common_name  = 
+      case_when(
+        species == "Chinstrap penguin (Pygoscelis antarctica)" ~ "Chinstrap",
+        species == "Gentoo penguin (Pygoscelis papua)" ~ "Gentoo",
+        species == "Adelie Penguin (Pygoscelis adeliae)" ~ "Adelie"
+      )
+  ) %>% 
+  select(-species) %>% # remove species column
+  filter(sex == "FEMALE")
+```
+
